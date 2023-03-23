@@ -1,27 +1,23 @@
-import React from "react";
-import Navbar from "./components/navbar/Navbar"
-import Login from './components/navbar/login/Login'
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link
-} from "react-router-dom";
+const express = require('express')
+const app = express()
+const connectDB = require('./db/connect')
+const user = require('./routes/user')
+require('dotenv').config()
 
-function App() {
-  return (
-    <div className="App">
-      <Navbar />
-      <Router>
-        <div>            
-        <Routes>
-          <Route path="/login">
-            <login />
-          </Route>
-        </Routes>
-      </div>
-    </Router>
-    </div>
-  );
+app.use(express.static('./public'))
+app.use(express.json())
+
+app.use('/api/v1/user', user)
+
+const port = process.env.PORT || 8080
+
+const start = async () =>{
+    try {
+        await connectDB(process.env.MONGO_URI)
+        app.listen(port, ()=>{console.log(`listening on port ${port}`)})    
+    } catch (error) {
+       console.log(error) 
+    } 
 }
-export default App;
+
+start()
